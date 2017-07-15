@@ -1,6 +1,8 @@
 # Dynamics CRM LINQPad DataContext Driver
 LINQPad driver for Dynamics CRM.
 
+Download binary package: https://github.com/tedd/DynamicsCrmLINQPadDataContextDriver/releases
+
 # How it works
 Uses CrmSvcUtil.exe to generate a proxy. This should ensure compatibility with most CRM versions and setups.
 
