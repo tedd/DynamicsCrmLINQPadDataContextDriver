@@ -1,19 +1,19 @@
 # Dynamics CRM LINQPad DataContext Driver
 LINQPad driver for Dynamics CRM.
 
+# Releases
+Current version is beta 1. It has only been tested on Dynamics CRM 2016 on-premise.
 Download binary package: https://github.com/tedd/DynamicsCrmLINQPadDataContextDriver/releases
 
 # How it works
 Uses CrmSvcUtil.exe to generate a proxy. This should ensure compatibility with most CRM versions and setups.
 
-# Releases
-Current version is beta 1. It has only been tested on Dynamics CRM 2016 on-premise.
-
 # Why another driver?
 The other drivers I tried did not work, and frankly I was not sure what they were trying to do. I just needed a straightforward way to connect to Dynamics CRM 2016 on-premise. A simple direct exposure to the connection parameters I use in code.
 
 # What if it doesn't work?
-You have the source code. Fix it and push back a patch to me. Or send me an e-mail on tedd@konge.net and I'll include it.
+Let me know by filing a bug report: https://github.com/tedd/DynamicsCrmLINQPadDataContextDriver/issues
+Also, you have the source code. Feel free to fix it and push back a patch to me.
 
 ## Set up dev environment
   * Delete the drivers from LINQPad if you have installed the binary version.
