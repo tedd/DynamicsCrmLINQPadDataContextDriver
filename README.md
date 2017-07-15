@@ -15,9 +15,12 @@ You have the source code. Fix it and push back a patch to me. Or send me an e-ma
 
 ## Set up dev environment
   * Delete the drivers from LINQPad if you have installed the binary version.
-  * Download the source code and compile it. (Some packages from NuGET will be downloaded.)
+  * Download the source code and compile it.
+    * NuGET packages should download
+	* Ensure that the reference to LINQPad.exe under project References is valid, if not, add reference to your LINQPad installation, i.e. C:\Program Files\LINQPad5\LINQPad.exe (yes, reference the .exe).
+	* If you get Reference errors for Xrm assemblies you can reference all .dll assemblies under src\packages\Microsoft.CrmSdk.CoreTools.8.2.0.5\content\bin\coretools
   * Start LINQPad. 
-  * You shoul now see the driver in LINQPad.
+  * You should now see the driver in LINQPad.
   * For every recompile: Close LINQPad, recompile, start LINQPad.
 
 ## Debugging tips
@@ -25,7 +28,7 @@ Even though "Attach to process" (CTRL+ALT+P) and "Reattach to process" (VS2017: 
 
   * "%localappdata%\LINQPad\Logs" contains a log-file from LINQPad.
   * On post-build event the driver will copy to "%localappdata%\LINQPad\Drivers\DataContext\4.6\Tedd.DynamicsCrmLINQPadDataContextDriver (165ac21ee0898778)\". CrmSvcUtil.exe will drop a log file here. This is also where cached proxies are.
-  * Due to how LINQPad works, a breakpoint may not always break. Simply add "Debug.Break();" in your code if you need to break somewhere. It will stop and ask you to attach Visual Studio. Remember to remove this line after.
+  * Due to how LINQPad works, a breakpoint may not always break. Simply add "Debug.Break();" in your code if you need to break somewhere. It will stop and ask you to attach Visual Studio. Remember to remove this line after, or end users will also be asked to debug (and terminate process if they say no).
  
 ## Important points in the code
   * LINQPad\Astoria\AstoriaDynamicDriver.cs is the LINQPad driver entrypoint.
