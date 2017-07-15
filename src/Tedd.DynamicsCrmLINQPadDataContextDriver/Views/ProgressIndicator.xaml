@@ -1,0 +1,18 @@
+﻿<Window x:Class="Tedd.DynamicsCrmLINQPadDataContextDriver.Views.ProgressIndicator"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tedd.DynamicsCrmLINQPadDataContextDriver.Views"
+        mc:Ignorable="d"
+        Title="ProgressIndicator" Width="300" Height="120" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Topmost="True" WindowStyle="None">
+    <Grid Margin="5,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ProgressBar Grid.Row="0" x:Name="ProgressBar" Height="25" Margin="5,5"/>
+        <Label Grid.Row="2" x:Name="Text" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">Status</Label>
+    </Grid>
+</Window>

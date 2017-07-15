@@ -1,0 +1,100 @@
+﻿<Window x:Class="Tedd.DynamicsCrmLINQPadDataContextDriver.Views.ConnectionDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tedd.DynamicsCrmLINQPadDataContextDriver.Views"
+        xmlns:viewModels="clr-namespace:Tedd.DynamicsCrmLINQPadDataContextDriver.ViewModels"
+        xmlns:uiConverters="clr-namespace:Tedd.DynamicsCrmLINQPadDataContextDriver.UiConverters"
+        d:DataContext="{d:DesignInstance viewModels:ConnectionDialogViewModel}"
+        mc:Ignorable="d"
+        Title="Connection" Width="660" Height="400" WindowStyle="ToolWindow" SizeToContent="Height">
+    <Grid Margin="5,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="15"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+
+
+        <Grid Row="0">
+            <Label FontSize="18">Dynamics CRM 2016 Connection</Label>
+        </Grid>
+
+        <Grid Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="15"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="0" Grid.Column="0">CRM Organization URL</Label>
+            <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Vertical">
+                <TextBox Text="{Binding ConnectionData.OrganizationUrl}" Height="25"/>
+                <Label>https://crm.yourdomain.com:5555/YourOrganization/</Label>
+            </StackPanel>
+
+            <Label Grid.Row="2" Grid.Column="0">Authentication mode</Label>
+            <ComboBox Grid.Row="2" Grid.Column="2" ItemsSource="{Binding Path=ConnectionData.AuthenticationType, Converter={uiConverters:EnumToCollectionConverter}, Mode=OneTime}"
+                          SelectedValuePath="Value"
+                          DisplayMemberPath="Description"
+                          SelectedValue="{Binding Path=ConnectionData.AuthenticationType}" />
+
+            <Label Grid.Row="4" Grid.Column="0">Domain</Label>
+            <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding ConnectionData.Domain}" Height="25"/>
+
+            <Label Grid.Row="6" Grid.Column="0">Username</Label>
+            <TextBox Grid.Row="6" Grid.Column="2" Text="{Binding ConnectionData.Username}" Height="25"/>
+
+            <Label Grid.Row="8" Grid.Column="0">Password</Label>
+            <StackPanel Grid.Row="8" Grid.Column="2" Orientation="Vertical">
+                <TextBox Text="{Binding ConnectionData.Password}" Height="25" />
+                <Label>Note: Password is not stored securely in memory.</Label>
+            </StackPanel>
+
+            <Label Grid.Row="10" Grid.Column="0">Cache entity model</Label>
+            <StackPanel Grid.Row="10" Grid.Column="2" Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding ConnectionData.CacheEntityModel}" />
+                <Label></Label>
+                <Button x:Name="DeleteCache" Click="DeleteCache_Click">Delete</Button>
+                <Label></Label>
+                <Label>Note! You need to clear cache when entity model on server changes.</Label>
+            </StackPanel>
+
+            <StackPanel Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Vertical">
+                <Label >Will use CrmSvcUtil.exe to generate proxy class. This will often take a very long time.</Label>
+                <Label >It should hopefully be compatible with all CRM versions up to whatever the included CrmSvcUtil.exe supports.</Label>
+                <TextBlock>           
+                    <Hyperlink x:Name="GoToSupportPage" NavigateUri="https://github.com/tedd/DynamicsCrmLINQPadDataContextDriver" RequestNavigate="GoToSupportPage_RequestNavigate">
+                        Go to GitHub page
+                    </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+
+            <StackPanel Grid.Row="14" Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button x:Name="ConnectButton" Click="ConnectButton_Click" IsDefault="True" Padding="5,5">Connect</Button>
+                <Label></Label>
+                <Button x:Name="CancelButton" Click="CancelButton_Click" IsCancel="True" Padding="5,5">Cancel</Button>
+            </StackPanel>
+
+        </Grid>
+    </Grid>
+</Window>
