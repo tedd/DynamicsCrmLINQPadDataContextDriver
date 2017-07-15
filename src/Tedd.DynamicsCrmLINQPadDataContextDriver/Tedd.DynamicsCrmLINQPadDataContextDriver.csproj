@@ -148,7 +148,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>del /q LINQPad.exe
+    <PostBuildEvent>del /q "$(TargetDir)LINQPad.exe" 2&gt;NUL &gt;NUL &amp;set errorlevel=0
 xcopy /F /i /y *.* "%25localappdata%25\LINQPad\Drivers\DataContext\4.6\Tedd.DynamicsCrmLINQPadDataContextDriver (165ac21ee0898778)\"
 xcopy /F /i /y "$(ProjectDir)\bin\coretools\*.*" "%25localappdata%25\LINQPad\Drivers\DataContext\4.6\Tedd.DynamicsCrmLINQPadDataContextDriver (165ac21ee0898778)\"
 copy /y "$(ProjectDir)\bin\coretools\CrmSvcUtil.exe.config" "%25localappdata%25\LINQPad\Drivers\DataContext\4.6\Tedd.DynamicsCrmLINQPadDataContextDriver (165ac21ee0898778)\CrmSvcUtil.exe.config.template"
