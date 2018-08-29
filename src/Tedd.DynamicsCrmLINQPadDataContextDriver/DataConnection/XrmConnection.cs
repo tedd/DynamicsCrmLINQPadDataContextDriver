@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,26 +12,43 @@ using Microsoft.Xrm.Sdk.Client;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Microsoft.Xrm.Sdk.Query;
+using Microsoft.Xrm.Tooling.Connector;
 using Tedd.DynamicsCrmLINQPadDataContextDriver.Models;
 
 namespace Tedd.DynamicsCrmLINQPadDataContextDriver.DataConnection
 {
     public class XrmConnection : IDisposable
     {
-        private OrganizationServiceProxy _organizationServiceProxy;
+        private IOrganizationService _organizationServiceProxy;
         public void Connect(ConnectionData connectionData)
         {
             if (_organizationServiceProxy != null)
                 throw new Exception("Already connected.");
 
-            AuthenticationCredentials clientCredentials = new AuthenticationCredentials();
-            clientCredentials.ClientCredentials.UserName.UserName = connectionData.Domain + "\\" + connectionData.Username;
-            clientCredentials.ClientCredentials.UserName.Password = connectionData.Password;
-            Uri OrgServiceURL = new Uri(connectionData.OrganizationUrlWithCrmService2011);
-            OrganizationServiceProxy serviceProxy = new OrganizationServiceProxy(OrgServiceURL, null, clientCredentials.ClientCredentials, null);
-            //Console.WriteLine("Connected to " + serviceProxy.ServiceConfiguration.ServiceEndpoints.First().Value.Address.Uri); 
-            _organizationServiceProxy = serviceProxy;
-        }
+	        string domain = (!string.IsNullOrEmpty(connectionData.Domain))
+		        ? ($"domain={connectionData.Password};")
+		        : ("");
+
+			string crmConnectionString =
+		        $"authtype={connectionData.AuthenticationType.ToString()};server={connectionData.OrganizationUrl};{domain}username={connectionData.Username};password={connectionData.Password}";
+
+			Debugger.Break();
+
+			CrmServiceClient conn = new Microsoft.Xrm.Tooling.Connector.CrmServiceClient(crmConnectionString);
+
+	        if (conn.LastCrmException != null)
+		        throw conn.LastCrmException;
+
+	        if (!string.IsNullOrEmpty(conn.LastCrmError))
+		        throw new Exception(conn.LastCrmError);
+
+	        if (!conn.IsReady)
+	        {
+		        throw new Exception("Connection not ready");
+	        }
+
+	        _organizationServiceProxy = (IOrganizationService) conn.OrganizationWebProxyClient ?? (IOrganizationService)conn.OrganizationServiceProxy;
+		}
 
 
         public string WhoAmI()
@@ -59,16 +77,16 @@ namespace Tedd.DynamicsCrmLINQPadDataContextDriver.DataConnection
         {
             var osp = _organizationServiceProxy;
             _organizationServiceProxy = null;
-            osp?.Dispose();
+            //osp?.Dispose();
         }
 
         private void Dispose(bool disposing)
         {
             ReleaseUnmanagedResources();
-            if (disposing)
-            {
-                _organizationServiceProxy?.Dispose();
-            }
+            //if (disposing)
+            //{
+            //    _organizationServiceProxy?.Dispose();
+            //}
         }
 
         public void Dispose()
