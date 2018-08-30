@@ -39,56 +39,77 @@ namespace Tedd.DynamicsCrmLINQPadDataContextDriver.Views
             CancelButton.IsEnabled = ConnectButton.IsEnabled = false;
             var progress = new ProgressIndicatorHost(Dispatcher, 3, true);
             try
-            {
+			{
 
-                string whoami = null;
-                var connectionData = ((ViewModels.ConnectionDialogViewModel)DataContext).ConnectionData;
-                // Attempt connect (non-blocking)
-                Exception failException = null;
-                await Task.Factory.StartNew(() =>
-                {
-                    using (var connection = new XrmConnection())
-                    {
-                        try
-                        {
-                            progress.SetStatus(1, "Connecting to CRM-server...");
-                            connection.Connect(connectionData);
-                            progress.SetStatus(2, "Getting WhoAmI...");
-                            whoami = connection.WhoAmI();
-                            progress.SetStatus(3, "Done!");
-                        }
-                        catch (Exception exception)
-                        {
-                            failException = exception;
-                        }
-                    }
-                });
+				string whoami = null;
+				var connectionData = ((ViewModels.ConnectionDialogViewModel)DataContext).ConnectionData;
 
-                if (failException != null)
-                {
-                    MessageBox.Show("Error connecting to CRM-server:\r\n" + failException.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    e.Handled = true;
-                    return;
-                }
+				connectionData.CrmConnectionString = CalculateConnectionString(connectionData);
 
-                //
-                if (whoami == null)
-                    whoami = "Something went wrong. Unable to retrieve WhoAmI fullname. We'll try to pretend everything is ok.";
+				// Attempt connect (non-blocking)
+				Exception failException = null;
+				await Task.Factory.StartNew(() =>
+				{
+					using (var connection = new XrmConnection())
+					{
+						try
+						{
+							progress.SetStatus(1, "Connecting to CRM-server...");
+							connection.Connect(connectionData);
+							progress.SetStatus(2, "Getting WhoAmI...");
+							whoami = connection.WhoAmI();
+							progress.SetStatus(3, "Done!");
+						}
+						catch (Exception exception)
+						{
+							failException = exception;
+						}
+					}
+				});
 
-                // Display result
-                MessageBox.Show(whoami);
+				if (failException != null)
+				{
+					MessageBox.Show("Error connecting to CRM-server:\r\n" + failException.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+					e.Handled = true;
+					return;
+				}
 
-                // Done
-                DialogResult = true;
-            }
-            finally
+				//
+				if (whoami == null)
+					whoami = "Something went wrong. Unable to retrieve WhoAmI fullname. We'll try to pretend everything is ok.";
+
+				// Display result
+				MessageBox.Show(whoami);
+
+				// Done
+				DialogResult = true;
+			}
+			finally
             {
                 CancelButton.IsEnabled = ConnectButton.IsEnabled = true;
                 progress.Dispose();
             }
         }
 
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
+		private static string CalculateConnectionString(Models.ConnectionData connectionData)
+		{
+			//calculate the connection string
+			string domain = (!string.IsNullOrEmpty(connectionData.Domain))
+					? ($"domain={connectionData.Domain};")
+					: ("");
+
+			string userName = (!string.IsNullOrEmpty(connectionData.Username))
+					? ($"username={connectionData.Username};")
+					: ("");
+
+			string password = (!string.IsNullOrEmpty(connectionData.Password))
+					? ($"password={connectionData.Password};")
+					: ("");
+
+			return $"authtype={connectionData.AuthenticationType.ToString()};server={connectionData.OrganizationUrl};{domain}{userName}{password}";
+		}
+
+		private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
         }

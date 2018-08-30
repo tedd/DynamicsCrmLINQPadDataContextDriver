@@ -20,17 +20,19 @@ namespace Tedd.DynamicsCrmLINQPadDataContextDriver.LINQPad.Astoria
     {
         public AstoriaDynamicDriver() : base()
         {
-            //AppDomain.CurrentDomain.FirstChanceException += (sender, args) =>
-            //{
-            //    MessageBox.Show("First chance:\r\n" + args.Exception.ToString());
-            //    Debugger.Break();
-            //};
-            //AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
-            //{
-            //    MessageBox.Show("Unhandled:\r\n" + args.ExceptionObject.ToString());
-            //    Debugger.Break();
-            //};
-        }
+//#if DEBUG
+//			AppDomain.CurrentDomain.FirstChanceException += (sender, args) =>
+//			{
+//				MessageBox.Show("First chance:\r\n" + args.Exception.ToString());
+//				Debugger.Break();
+//			};
+//			AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+//			{
+//				MessageBox.Show("Unhandled:\r\n" + args.ExceptionObject.ToString());
+//				Debugger.Break();
+//			};
+//#endif
+		}
 
         public override string Name { get { return "Dynamics CRM DataContext Driver"; } }
         public override string Author { get { return "Tedd Hansen"; } }
@@ -39,31 +41,21 @@ namespace Tedd.DynamicsCrmLINQPadDataContextDriver.LINQPad.Astoria
         {
             // The URI of the service best describes the connection:
             var c = new ConnectionData(cxInfo);
-            return c.Username + "@" + c.OrganizationUrl;
+
+			// this isn't what Linqpad uses to build the connection description.  Not sure where it's coming from.
+            return string.IsNullOrWhiteSpace(c.Username) ? $@"{CredentialCache.DefaultNetworkCredentials.UserName}\{CredentialCache.DefaultNetworkCredentials.UserName}" : c.Username + "@" + c.OrganizationUrl;
         }
         public override ParameterDescriptor[] GetContextConstructorParameters(IConnectionInfo cxInfo)
         {
             // We need to pass the chosen URI into the DataServiceContext's constructor:
             return new[] { new ParameterDescriptor("serviceRoot", "Microsoft.Xrm.Tooling.Connector.CrmServiceClient") };
-            //return new[] { new ParameterDescriptor("serviceRoot", "System.Uri") };
         }
 
         public override object[] GetContextConstructorArguments(IConnectionInfo cxInfo)
         {
             // We need to pass the chosen URI into the DataServiceContext's constructor:
-            //return new object[] { new Microsoft.Xrm.Tooling.Connector.CrmServiceClient(new ConnectionData(cxInfo).GetConnectionString()) };
-            //Debugger.Break();
             var cd = new ConnectionData(cxInfo);
-            return new object[] { new Microsoft.Xrm.Tooling.Connector.CrmServiceClient(
-                credential: (NetworkCredential)cd.GetCredentials(),
-                authType:cd.AuthenticationType,
-                hostName:cd.GetOrganizationUrl_Host(),
-                port:cd.GetOrganizationUrl_Port().ToString(),
-                orgName:cd.GetOrganizationUrl_Organization(),
-                useSsl:cd.GetOrganizationUrl_UsingSSL()
-                ) };
-
-
+            return new object[] { new Microsoft.Xrm.Tooling.Connector.CrmServiceClient(crmConnectionString: cd.CrmConnectionString) };
         }
         public override bool ShowConnectionDialog(IConnectionInfo cxInfo, bool isNewConnection)
         {
@@ -126,18 +118,7 @@ namespace Tedd.DynamicsCrmLINQPadDataContextDriver.LINQPad.Astoria
         public override bool AreRepositoriesEquivalent(IConnectionInfo r1, IConnectionInfo r2)
         {
             // Two repositories point to the same endpoint if their URIs are the same.
-            return object.Equals(
-                string.Join("|",
-                    r1.DriverData.Element("OrganizationUrl"),
-                    r1.DriverData.Element("Username"),
-                    r1.DriverData.Element("Password")
-                ),
-                string.Join("|",
-                    r2.DriverData.Element("OrganizationUrl"),
-                    r2.DriverData.Element("Username"),
-                    r2.DriverData.Element("Password")
-                )
-            );
+	        return object.Equals(r1.DriverData.Element("ConnectionString"), r2.DriverData.Element("Connectionstring"));
         }
         #region Assemblies
         public override IEnumerable<string> GetAssembliesToAdd()

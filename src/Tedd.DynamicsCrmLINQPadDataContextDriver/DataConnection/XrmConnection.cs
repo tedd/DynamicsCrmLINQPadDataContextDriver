@@ -25,16 +25,7 @@ namespace Tedd.DynamicsCrmLINQPadDataContextDriver.DataConnection
             if (_organizationServiceProxy != null)
                 throw new Exception("Already connected.");
 
-	        string domain = (!string.IsNullOrEmpty(connectionData.Domain))
-		        ? ($"domain={connectionData.Password};")
-		        : ("");
-
-			string crmConnectionString =
-		        $"authtype={connectionData.AuthenticationType.ToString()};server={connectionData.OrganizationUrl};{domain}username={connectionData.Username};password={connectionData.Password}";
-
-			Debugger.Break();
-
-			CrmServiceClient conn = new Microsoft.Xrm.Tooling.Connector.CrmServiceClient(crmConnectionString);
+			CrmServiceClient conn = new Microsoft.Xrm.Tooling.Connector.CrmServiceClient(connectionData.CrmConnectionString);
 
 	        if (conn.LastCrmException != null)
 		        throw conn.LastCrmException;

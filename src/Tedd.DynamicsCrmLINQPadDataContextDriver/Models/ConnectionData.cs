@@ -14,20 +14,25 @@ using Tedd.DynamicsCrmLINQPadDataContextDriver.Annotations;
 
 namespace Tedd.DynamicsCrmLINQPadDataContextDriver.Models
 {
-    public class ConnectionData:INotifyPropertyChanged
-    {
-        readonly IConnectionInfo _cxInfo;
-        readonly XElement _driverData;
+	public class ConnectionData : INotifyPropertyChanged
+	{
+		readonly IConnectionInfo _cxInfo;
+		readonly XElement _driverData;
 
-        public ConnectionData(IConnectionInfo cxInfo)
-        {
-            _cxInfo = cxInfo;
-            _driverData = cxInfo.DriverData;
-            _cxInfo.Persist = true;
+		public ConnectionData(IConnectionInfo cxInfo)
+		{
+			_cxInfo = cxInfo;
+			_driverData = cxInfo.DriverData;
+			_cxInfo.Persist = true;
+		}
 
-        }
+		public string CrmConnectionString
+		{
+			get { return (string)_driverData.Element("ConnectionString") ?? ""; }
+			set { _driverData.SetElementValue("ConnectionString", value?.Trim()); OnPropertyChanged(); }
+		}
 
-        public AuthenticationType AuthenticationType
+		public AuthenticationType AuthenticationType
         {
             get
             {
@@ -64,39 +69,6 @@ namespace Tedd.DynamicsCrmLINQPadDataContextDriver.Models
             }
         }
 
-        public string GetOrganizationUrl_Host()
-        {
-                var uri = new Uri(OrganizationUrl);
-                return uri.Host;
-        }
-        public int GetOrganizationUrl_Port()
-        {
-                var uri = new Uri(OrganizationUrl);
-                return uri.Port;
-        }
-        public string GetOrganizationUrl_Organization()
-        {
-                var uri = new Uri(OrganizationUrl);
-                return uri.PathAndQuery.Split('/')[1];
-        }
-        public bool GetOrganizationUrl_UsingSSL()
-        {
-                var uri = new Uri(OrganizationUrl);
-            return uri.Scheme.ToLower() == "https";
-        }
-
-
-        public string OrganizationUrlWithCrmService2011
-        {
-            get
-            {
-                var url = OrganizationUrl.Trim();
-                if (!url.EndsWith("/"))
-                    url = url + "/";
-                return url + "/XRMServices/2011/Organization.svc";
-            }
-        }
-
         public bool CacheEntityModel
         {
             get
@@ -115,8 +87,7 @@ namespace Tedd.DynamicsCrmLINQPadDataContextDriver.Models
         {
             get
             {
-                var key = string.Join("|", new string[] { Domain, Username, Password, OrganizationUrl });
-                var keyBytes = Encoding.UTF8.GetBytes(key);
+                var keyBytes = Encoding.UTF8.GetBytes(CrmConnectionString);
                 using (var hasher = SHA256.Create())
                 {
 
@@ -132,22 +103,9 @@ namespace Tedd.DynamicsCrmLINQPadDataContextDriver.Models
 
         }
 
-    
-
-        public ICredentials GetCredentials()
-        {
-            if (!string.IsNullOrEmpty(Domain))
-                return new NetworkCredential(Username, Password, Domain);
-
-            if (!string.IsNullOrEmpty(Username))
-                return new NetworkCredential(Username, Password);
-
-            return CredentialCache.DefaultNetworkCredentials;
-        }
-
         public string GetConnectionString()
         {
-            return @"Authentication Type=AD;Server=" + OrganizationUrl + ";User ID=" + Username + ";Password=" + Password;
+	        return CrmConnectionString;
         }
 
         #region INotifyPropertyChanged
