@@ -144,14 +144,14 @@ namespace Tedd.DynamicsCrmLINQPadDataContextDriver.LINQPad.Astoria
             {
                 // Set up config for CrmSvcUtil.exe
                 var keys = new Dictionary<string, string>();
-                //keys.Add("connectionstring", connectionData.GetConnectionString());
+                keys.Add("connectionstring", connectionData.GetConnectionString());
                 keys.Add("o", codefile);
-                keys.Add("u", connectionData.Username);
-                keys.Add("p", connectionData.Password);
-                keys.Add("d", connectionData.Domain);
+                //keys.Add("u", connectionData.Username);
+                //keys.Add("p", connectionData.Password);
+                //keys.Add("d", connectionData.Domain);
                 keys.Add("namespace", ns);
                 keys.Add("serviceContextName", "TypedDataContext");
-                keys.Add("url", connectionData.OrganizationUrlWithCrmService2011);
+                //keys.Add("url", connectionData.OrganizationUrlWithCrmService2011);
 
                 XDocument doc = XDocument.Load(src);
                 foreach (var kvp in keys)
